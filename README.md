@@ -1,57 +1,80 @@
-import { Component, OnInit } from '@angular/core';
-import {ServiceapiService} from '../serviceapi.service'
-import { Hero }    from '../hero';
+
+    
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { Book } from '../aa';
+import {ServiceapiService} from '../api.service'
 
 @Component({
-  selector: 'app-hero-form',
-  templateUrl: './triggerhdfs.component.html',
-  styleUrls: ['./triggerhdfs.component.css']
+  selector: 'app-book-form',
+  templateUrl: './hdpmrg.component.html',
+  styleUrls: ['./hdpmrg.component.css']
 })
-export class TriggerhdfsComponent implements OnInit{
-   subjects: string[];
+export class BookFormComponent implements OnInit {
+  public readonly maxBookCount = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  public bookForm: FormGroup;
+  subjects: string[];
   smartphone: any = [];
   anys: any = [];
   
-  powers = ['DL'];
+key: any;
+apikey: any;
+  @Input()
+  book: Book;
+  @Output()
+  newBook: EventEmitter<Book> = new EventEmitter<Book>();
 
-  destination = ['D2'];
-
-  model = new Hero(18, 'DL', this.powers[0], 'DL');
- 
-  submitted = false;
-  products = [];
-
-	constructor( private api: ServiceapiService) { 
+  constructor( private api: ServiceapiService) { 
     this.api.getOutputs().subscribe((data: {}) => (this.subjects = data['outputs']));
 
     console.log(this.subjects)
   }
-	ngOnInit() {
-  //  this.getSmartphones();
-  this.getenvironmenturl();
-	}
 
-  onSubmit(event) { this.submitted = true;
-    event.preventDefault()
-    Math.random() 
-    alert("Hello your Tracking ID:" + +Math.random())
-    console.log("hello", Math.random())
+  ngOnInit() {
+    this.initFormGroup();
+    this.api.getSmartphone().subscribe( data => {
+      this.key = Object.keys(data);
+      
+      console.log(this.key);
+     
+
+    })
+    this.api.getlocalenvurl().subscribe(data => {
+  this.apikey = Object.keys(data)
+  console.log(this.apikey);
+    })
   }
-  getSmartphones() {
-    this.api.getSmartphone()
-      .subscribe(data => {
-        for (const d of (data as any)) {
-          this.smartphone.push({
-            // name: d.name,
-            // price: d.price
-          });
-        }
-        console.log(this.smartphone);
-      });
+
+
+  public onSubmit({ value }: { value: Book }): void {
+    value.id = this.book && this.book.id ? this.book.id : null;
+    // console.log(value);
+    this.api.getlocalmergeappupdurl(value);
+    this.getenvironmenturl();
+    // this.newBook.emit(value);
+    this.bookForm.reset();
+   
+  }
+
+
+  private initFormGroup(): void {
+    const name = this.book && this.book.name ? this.book.name : '';
+    const auther = this.book && this.book.auther ? this.book.auther : '';
+    const count = this.book && this.book.auther ? this.book.count : 0;
+    const desc =
+      this.book && this.book.description ? this.book.description : '';
+
+
+    this.bookForm = new FormGroup({
+      name: new FormControl(name, [Validators.required]),
+      auther: new FormControl(auther, [Validators.required]),
+      count: new FormControl(count, [Validators.required]),
+      description: new FormControl(desc, [Validators.required])
+    });
   }
 
   getenvironmenturl() {
-    this.api.getlocalmergeappupdurl()
+    this.api.getSmartphone()
       .subscribe(data => {
         // for (const d of (data as any)) {
         //   this.anys.push({
@@ -62,5 +85,14 @@ export class TriggerhdfsComponent implements OnInit{
         console.log(this.api.getlocalmergeappupdurl);
       });
   }
-
 }
+ 
+
+
+
+
+
+
+
+
+
