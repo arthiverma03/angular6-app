@@ -1,27 +1,66 @@
-# MyFirstApp
+import { Component, OnInit } from '@angular/core';
+import {ServiceapiService} from '../serviceapi.service'
+import { Hero }    from '../hero';
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.0.
+@Component({
+  selector: 'app-hero-form',
+  templateUrl: './triggerhdfs.component.html',
+  styleUrls: ['./triggerhdfs.component.css']
+})
+export class TriggerhdfsComponent implements OnInit{
+   subjects: string[];
+  smartphone: any = [];
+  anys: any = [];
+  
+  powers = ['DL'];
 
-## Development server
+  destination = ['D2'];
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+  model = new Hero(18, 'DL', this.powers[0], 'DL');
+ 
+  submitted = false;
+  products = [];
 
-## Code scaffolding
+	constructor( private api: ServiceapiService) { 
+    this.api.getOutputs().subscribe((data: {}) => (this.subjects = data['outputs']));
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+    console.log(this.subjects)
+  }
+	ngOnInit() {
+  //  this.getSmartphones();
+  this.getenvironmenturl();
+	}
 
-## Build
+  onSubmit(event) { this.submitted = true;
+    event.preventDefault()
+    Math.random() 
+    alert("Hello your Tracking ID:" + +Math.random())
+    console.log("hello", Math.random())
+  }
+  getSmartphones() {
+    this.api.getSmartphone()
+      .subscribe(data => {
+        for (const d of (data as any)) {
+          this.smartphone.push({
+            // name: d.name,
+            // price: d.price
+          });
+        }
+        console.log(this.smartphone);
+      });
+  }
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+  getenvironmenturl() {
+    this.api.getlocalmergeappupdurl()
+      .subscribe(data => {
+        // for (const d of (data as any)) {
+        //   this.anys.push({
+        //     // name: d.name,
+        //     // price: d.price
+        //   });
+        // }
+        console.log(this.api.getlocalmergeappupdurl);
+      });
+  }
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+}
